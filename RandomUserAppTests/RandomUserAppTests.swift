@@ -31,11 +31,6 @@ class RandomUserAppTests: XCTestCase {
     XCTAssertNotNil(data)
   }
   
-  func getRawData() -> Data {
-    let data = Bundle.readRawJSONData(filename: filename, ext: ext)
-    return data
-  }
-  
   func testParseJSONDataToUserArray() {
     // arrange
     let data = getRawData()
@@ -58,5 +53,42 @@ class RandomUserAppTests: XCTestCase {
     
     // asset
     XCTAssertEqual(firstUser.name.firstName, expectedFirstName, "\(firstUser.name.firstName) should be equal to \(expectedFirstName)")
-  }  
+  }
+  
+  func testFirstUserCountry() {
+    // arrange
+    let firstUser = getUsers().first
+    let expectedCountry = "Spain"
+    
+    // act
+    let country = firstUser?.location.country ?? "Saint Lucia"
+    
+    // assert
+    XCTAssertEqual(expectedCountry, country, "country should be \(expectedCountry)")
+  }
+  
+  func testFirstUserPostcode() {
+    // arrange
+    let firstUser = getUsers().first
+    let expectedPostcode = "43898"
+    
+    // act
+    let postcode = firstUser?.location.postcode.info()
+    
+    // assert
+    XCTAssertEqual(expectedPostcode, postcode, "postcode should be equal to \(expectedPostcode)")
+  }
+}
+
+extension RandomUserAppTests {
+  func getRawData() -> Data {
+    let data = Bundle.readRawJSONData(filename: filename, ext: ext)
+    return data
+  }
+  
+  func getUsers() -> [User] {
+    let data = getRawData()
+    let users = RandomUserData.getUsers(from: data)
+    return users
+  }
 }
